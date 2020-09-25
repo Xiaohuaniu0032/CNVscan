@@ -81,9 +81,9 @@ shift_sex <- function(df){ # NOT USED
 # 性别矫正
 #this.sex <- shift_sex(rt)
 
-sex.df <- read.table(sex.f,header=FALSE,sep='\t')
-this.sex <- sex.df[1,1]
-print(paste("infered sex is:",this.sex,sep='\t'))
+sex.df <- read.table(sex.f,header=FALSE,sep="\t")
+this.sex <- sex.df[1,2]
+print(paste("infered sex is:",this.sex))
 
 # check chr naming
 

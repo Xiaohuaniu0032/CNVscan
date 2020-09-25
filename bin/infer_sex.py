@@ -35,20 +35,19 @@ def chr_naming(cnn_file):
     return(naming)
     
         
-def infer_sex(outfile):
-    options = Options()
+def infer_sex(infile,outfile):
     auto_cov = []
     chrX_cov = []
     chrY_cov = []
 
-    with open(options.cov,'r') as cov_H:
+    with open(infile,'r') as cov_H:
         next(cov_H)
         for line in cov_H:
             arr = line.rstrip().split('\t')
             cov = int(float(arr[-2]))
             
-            chr_naming = chr_naming(options.cov)
-            if chr_naming == "with_prefix":
+            chr_name = chr_naming(infile)
+            if chr_name == "with_prefix":
                 # chr1
                 if arr[0] != "chrX" and arr[0] != "chrY":
                     auto_cov.append(cov)
@@ -130,13 +129,14 @@ def infer_sex(outfile):
 
     # write to outfile
     of = open(outfile,'w')
-    of.write(sex)
+    of.write("sex"+'\t'+sex+'\n')
     of.close()
 
     return(sex)
 
 if __name__ == "__main__":
-    infer_sex()
+    options = Options()
+    infer_sex(options.cov,options.of)
 
 
 
