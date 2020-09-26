@@ -86,12 +86,24 @@ this.sex <- sex.df[1,2]
 print(paste("infered sex is:",this.sex))
 
 # check chr naming
-
+chrom <- rt[1,1]
+if (grepl('chr',chrom)){
+    # with chr-prefix
+    chr_naming <- 'with_prefix'
+}else{
+    chr_naming <- 'no_prefix'
+}
 
 if (this.sex == "male"){
-    df.sexchr <- rt[rt$chromosome == "chrX" | rt$chromosome == "chrY",]
-    cov <- df.sexchr$depth
-    rt[rt$chromosome == "chrX" | rt$chromosome == "chrY",]$depth <- cov * 2
+    if (chr_naming == "with_prefix"){
+        df.sexchr <- rt[rt$chromosome == "chrX" | rt$chromosome == "chrY",]
+        cov <- df.sexchr$depth # sex chr's cov
+        rt[rt$chromosome == "chrX" | rt$chromosome == "chrY",]$depth <- cov * 2
+    }else{
+        df.sexchr <- rt[rt$chromosome == "X" | rt$chromosome == "Y",]
+        cov <- df.sexchr$depth # sex chr's cov
+        rt[rt$chromosome == "X" | rt$chromosome == "Y",]$depth <- cov * 2
+    }
 }
 
 
