@@ -11,6 +11,7 @@ def parse_args():
     AP.add_argument('-n',help='sample name',dest='name')
     AP.add_argument('-fa',help='fasta file',dest='fasta',default='/data1/database/b37/human_g1k_v37.fasta')
     AP.add_argument('-m',help='analysis mode. can be [ref|cnv]',default='ref',dest='mode')
+    AP.add_argument('-ref',help='control dir',dest='ref')
     AP.add_argument('-od',help='out dir',dest='outdir')
 
     return AP.parse_args()
