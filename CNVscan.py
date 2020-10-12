@@ -66,9 +66,17 @@ def main():
     if args.mode == 'ref':
         pass
     else:
-        # cal logR
-        cmd = "%s %s/bin/cal_logR.pl"
+        # make ref matrix
+        ref_mat = "%s/ref_matrix.txt" % (args.outdir)
+        cmd = "%s %s/bin/make_ref_matrix.pl %s %s" % (perl,bin_dir,args.ref,ref_mat)
+        # calculate logR
+        logR = "%s/%s.log2Ratio.xls" % (args.outdir,args.name)
+        norm_file = "%s/%s.norm.xls" % (args.outdir,args.name)
+        cmd = "%s %s/bin/cal_logR.pl %s %s %s" % (perl,bin_dir,norm_file,ref_mat,logR)
         f.write(cmd)
+        # calculate gene-level copy number
+        cnvfile = "%s/%s.Gene_Level_CNV.xls" % (args.outdir,args.name)
+        cmd = "%s %s/bin/Gene_Level_CNV.pl -i %s -o %s" % (perl,bin_dir,logR,cnvfile)
 
     f.close()
 
