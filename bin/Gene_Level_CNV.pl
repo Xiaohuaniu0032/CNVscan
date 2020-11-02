@@ -92,7 +92,7 @@ for my $gene (@genes){
 }
 
 for my $gene (@uniqGenes){
-    print "$gene\n";
+    #print "$gene\n";
     my @ok_target_cn;
     if (exists $geneCN{$gene}{"ok"}){
         @ok_target_cn = @{$geneCN{$gene}{"ok"}};
@@ -110,7 +110,7 @@ for my $gene (@uniqGenes){
     my $target_num = scalar(@ok_target_cn) + scalar(@fail_target_cn);
     #print "$target_num\n";
     my $ok_pct = sprintf "%.2f", scalar(@ok_target_cn)/$target_num * 100;
-    print "$ok_pct\n";
+    #print "$ok_pct\n";
     if ($target_num <= 3 || $ok_pct <= 70){
         next; # filter low quality gene or gene with less targets
     }
