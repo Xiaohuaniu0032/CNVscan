@@ -45,10 +45,12 @@ hg19 = /data1/database/b37/human_g1k_v37.fasta
 
 ## Method
 1. calculate region coverage
-2. gc correction
-3. library size normalization
-4. calculate logR for each region
-5. calculate gene-level copy number
+2. infer sex
+3. adjust chrX and chrY's raw depth according infered SEX
+4. gc correction
+5. library size normalization
+6. calculate logR for each region
+7. calculate gene-level copy number
 
 
 ### parameter specification
