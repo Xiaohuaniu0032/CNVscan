@@ -37,8 +37,8 @@ def main():
 
     bin_dir = os.path.split(os.path.realpath(__file__))[0]
 
-    runsh = args.outdir + '/ref.%s.sh' % (args.name)
-    print("analysis mode is: ref...")
+    runsh = args.outdir + '/cnv.%s.sh' % (args.name)
+    #print("analysis mode is: ref...")
     f = open(runsh,'w')
 
     # cal depth
@@ -69,14 +69,18 @@ def main():
         # make ref matrix
         ref_mat = "%s/ref_matrix.txt" % (args.outdir)
         cmd = "%s %s/bin/make_ref_matrix.pl %s %s" % (perl,bin_dir,args.ref,ref_mat)
+        f.write(cmd+'\n')
+
         # calculate logR
         logR = "%s/%s.log2Ratio.xls" % (args.outdir,args.name)
         norm_file = "%s/%s.norm.xls" % (args.outdir,args.name)
         cmd = "%s %s/bin/cal_logR.pl %s %s %s" % (perl,bin_dir,norm_file,ref_mat,logR)
-        f.write(cmd)
+        f.write(cmd+'\n')
+
         # calculate gene-level copy number
         cnvfile = "%s/%s.Gene_Level_CNV.xls" % (args.outdir,args.name)
         cmd = "%s %s/bin/Gene_Level_CNV.pl -i %s -o %s" % (perl,bin_dir,logR,cnvfile)
+        f.write(cmd+'\n')
 
     f.close()
 
