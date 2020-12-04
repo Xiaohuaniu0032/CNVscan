@@ -111,7 +111,7 @@ for my $gene (@uniqGenes){
     #print "$target_num\n";
     my $ok_pct = sprintf "%.2f", scalar(@ok_target_cn)/$target_num * 100;
     #print "$ok_pct\n";
-    if ($target_num <= 3 || $ok_pct <= 70){
+    if ($target_num < 3 || $ok_pct <= 70){
         next; # filter low quality gene or gene with less targets
     }
 
