@@ -64,7 +64,7 @@ hg19 = /data1/database/b37/human_g1k_v37.fasta
 1. get a set of wbc sample's bam file (30~50 samples is ok)
 2. use `-m ref` to generate a set of `*.norm.xls` files
 3. copy all of `*.norm.xls` files into a directory
-4. call cnv using `-m cnv` (please specify `-ref`)
+4. call cnv using `-m cnv`
 
 
 ## Testing
