@@ -82,6 +82,12 @@ def main():
         cmd = "%s %s/bin/Gene_Level_CNV.pl -i %s -o %s" % (perl,bin_dir,logR,cnvfile)
         f.write(cmd+'\n')
 
+        # cal QC (0.2X/0.5X)
+        # outfile is *.CNV.QC.xls
+        depth = "%s/%s.depth.tmp" % (args.outdir,args.name)
+        cmd = "%s %s/bin/statQC.pl %s %s" % (perl,bin_dir,depth,args.outdir)
+        f.write(cmd+'\n')
+
     f.close()
 
 if __name__ == "__main__":
