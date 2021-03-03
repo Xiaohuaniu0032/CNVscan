@@ -17,7 +17,7 @@ GetOptions(
 # output file: *.Gene_Level_CNV.xls
 
 # filter rules:
-# 1. skip gene with <= 3 targets
+# 1. skip gene with < 3 targets
 # 2. skip target with low depth (<=30X)
 
 
