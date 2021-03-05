@@ -35,13 +35,13 @@ if (not defined $target_num_cutoff){
 }
 
 if (not defined $cnv_pct_cutoff){
-    $cnv_pct_cutoff = 70;
+    $cnv_pct_cutoff = 0.7; # 70%
 }
 
 
-
 open O, ">$outfile" or die;
-print O "sample\tgene\tchr\tstart\tend\tcopynumber\tcnvtype\n";
+#print O "sample\tgene\tchr\tstart\tend\tcopynumber\tcnvtype\n";
+print O "#Sample\tGene\tChr\tStart\tEnd\tCopyNumber\tBinCount\tcnvType\n";
 
 
 my %geneStartEnd;
@@ -49,29 +49,24 @@ my %geneChr;
 my %geneCN;
 my @genes;
 my @sampleName;
+
 open IN, "$logR" or die;
 <IN>;
 while (<IN>){
     chomp;
     my @arr = split /\t/;
     my $cn;
-    if ($arr[-2] != 0){
-        $cn = sprintf "%.2f", $arr[-3]/$arr[-2]*2;
-    }else{
-        $cn = "NA";
-    }
     
-    if ($arr[5] <= 30 || $cn eq "NA"){
-        push @{$geneCN{$arr[4]}{"fail"}}, $cn;
-    }else{
-        push @{$geneCN{$arr[4]}{"ok"}}, $cn;
-    }
+    push @{$geneCN{$arr[4]}}, $arr[-1]; # cn maybe NA
 
-    $geneChr{$arr[4]} = $arr[1];
-    push @{$geneStartEnd{$arr[4]}}, $arr[2];
-    push @{$geneStartEnd{$arr[4]}}, $arr[3];
-    push @genes, $arr[4];
+    $geneChr{$arr[4]} = $arr[1]; # gene's chr
+ 
+    push @{$geneStartEnd{$arr[4]}}, $arr[2]; # pos
+    push @{$geneStartEnd{$arr[4]}}, $arr[3]; # pos
+    
+    push @genes, $arr[4]; # gene list
     push @sampleName, $arr[0];
+
 }
 close IN;
 
@@ -79,6 +74,7 @@ my %geneRegion;
 my %geneFlag;
 my @uniqGenes;
 
+# get uniq gene list and its start/end pos
 for my $gene (@genes){
     if (!exists $geneFlag{$gene}){
         $geneFlag{$gene} = 1;
@@ -93,86 +89,86 @@ for my $gene (@genes){
 
 for my $gene (@uniqGenes){
     #print "$gene\n";
-    my @ok_target_cn;
-    if (exists $geneCN{$gene}{"ok"}){
-        @ok_target_cn = @{$geneCN{$gene}{"ok"}};
-    }else{
-        @ok_target_cn = qw//;
+
+    # how many target
+    my @cn = @{$geneCN{$gene}};
+    my $target_n = scalar(@cn);
+
+    # skip gene with only 1 or 2 targets
+    if ($target_n < 3){
+        print "$gene has $target_n target(s) [need >=3 by default], this gene will be skipped\n";
+        next;
     }
 
-    my @fail_target_cn;
-    if (exists $geneCN{$gene}{"fail"}){
-        @fail_target_cn = @{$geneCN{$gene}{"fail"}};
-    }else{
-        @fail_target_cn = qw//;
+    # how may target's value is NA
+    my $na_num = 0;
+    my @eff_cn;
+
+    for my $cn (@cn){
+        my $cn_str = "$cn"; # as string
+        if ($cn_str eq 'NA'){
+            $na_num += 1;
+        }else{
+            push @eff_cn, $cn; # eff cn
+        }
     }
 
-    my $target_num = scalar(@ok_target_cn) + scalar(@fail_target_cn);
-    #print "$target_num\n";
-    my $ok_pct = sprintf "%.2f", scalar(@ok_target_cn)/$target_num * 100;
-    #print "$ok_pct\n";
-    if ($target_num < 3 || $ok_pct <= 70){
-        next; # filter low quality gene or gene with less targets
+    # skip gene with > 2 NA targets
+    if ($na_num > 2){
+        print "$gene has $na_num NA target(s) [NA target num should <= 2 by default], this gene will be skipped\n";
+        next;
     }
 
-    my $cnvtype;
+    # how many eff target
+    my $eff_n = $target_n - $na_num;
+    my $eff_pct = sprintf "%.2f", $eff_n/$target_n;
+
+    # skip gene with < 3 eff target
+    if ($eff_n < 3){
+        print "$gene has $eff_n eff target [non-NA num should be >=3 by default], this gene will be skipped\n";
+        next;
+    }
+
     my $gain_num = 0;
     my $loss_num = 0;
-    for my $cn (@ok_target_cn){
+
+    for my $cn (@eff_cn){
         if ($cn >= $gain_cutoff){
             $gain_num += 1;
         }
+
         if ($cn <= $loss_cutoff){
             $loss_num += 1;
         }
     }
 
     my ($gain_pct,$loss_pct) = (0,0);
-    $gain_pct = sprintf "%.2f", $gain_num/$target_num * 100;
-    $loss_pct = sprintf "%.2f", $loss_num/$target_num * 100;
+    $gain_pct = sprintf "%.2f", $gain_num/scalar(@eff_cn);
+    $loss_pct = sprintf "%.2f", $loss_num/scalar(@eff_cn);
+
+    my $sum_cn;
+    for my $cn (@eff_cn){
+        $sum_cn += $cn;
+    }
+
+    my $mean_cn = sprintf "%.2f", $sum_cn/scalar(@eff_cn);
 
 
-    my ($sum_cn,$mean_cn) = (0,0);
-
-    if ($gain_pct >= $cnv_pct_cutoff){
-        # re-check cn
-        for my $cn (@ok_target_cn){
-            $sum_cn += $cn;
-        }
-        
-        $mean_cn = sprintf "%.2f", $sum_cn/scalar(@ok_target_cn);
-        
-        if ($mean_cn >= $gain_cutoff){
-            $cnvtype = "gain";
-        }else{
-            $cnvtype = "normal";
-        }
-    }elsif ($loss_pct >= $cnv_pct_cutoff){
-        for my $cn (@ok_target_cn){
-            $sum_cn += $cn;
-        }
-
-        $mean_cn = sprintf "%.2f", $sum_cn/scalar(@ok_target_cn);
-
-        if ($mean_cn <= $loss_cutoff){
-            $cnvtype = "loss";
-        }else{
-            $cnvtype = "normal";
-        }
+    my $cnvtype;
+    if ($gain_pct >= $cnv_pct_cutoff and $mean_cn >= $gain_cutoff){
+        $cnvtype = "gain"; # >= 2.7
+    }elsif ($loss_pct >= $cnv_pct_cutoff and $mean_cn <= $loss_cutoff){
+        $cnvtype = "loss"; # <= 1.3
     }else{
-        for my $cn (@ok_target_cn){
-            $sum_cn += $cn;
-        }
-
-        $mean_cn = sprintf "%.2f", $sum_cn/scalar(@ok_target_cn);
-
         $cnvtype = "normal";
     }
+
+    print "$gene\t\($gain_num\,$loss_num\)\|$eff_n\|$target_n\|$na_num\t$mean_cn\t$cnvtype\n";
 
     my $start = $geneRegion{$gene}{"start"};
     my $end = $geneRegion{$gene}{"end"};
 
-    print O "$sampleName[0]\t$gene\t$geneChr{$gene}\t$start\t$end\t$mean_cn\t$cnvtype\n";
+    print O "$sampleName[0]\t$gene\t$geneChr{$gene}\t$start\t$end\t$mean_cn\t$target_n\t$cnvtype\n";
 }
 
 close O;
