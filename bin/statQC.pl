@@ -43,8 +43,6 @@ for (@base){
 	$sum_base += $_;
 }
 
-my $target_n = @depth;
-
 my $mean_depth;
 if ($sum_base == 0){
 	$mean_depth = 0;
