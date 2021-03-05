@@ -66,6 +66,13 @@ def main():
     if args.mode == 'ref':
         pass
     else:
+        # check if -ref DIR exists
+        if args.ref:
+            pass
+        else:
+            print("[Error]: you need to specify -ref when your -m is cnv! program will exit.")
+            exit()
+
         # make ref matrix
         ref_mat = "%s/ref_matrix.txt" % (args.outdir)
         cmd = "%s %s/bin/make_ref_matrix.pl %s %s" % (perl,bin_dir,args.ref,ref_mat)
