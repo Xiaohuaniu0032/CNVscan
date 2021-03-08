@@ -2,28 +2,25 @@
 detect somatic copy number from capture NGS data using Pool of Normal (PoN) method
 
 ## Usage
-`python3 CNVscan.py -bam <*.bam> -bed <*.bed> -n <name> -fa <*.fasta> -m <ref|cnv> -od <outdir>`
+`python3 CNVscan.py -bam <*.bam> -bed <*.bed> -n <name> -fa <*.fasta> -m <cnv> -od <outdir> -ref <ref control dir> -annot <cnv annot file>`
 
 
 
 ```
 $ python CNVscan.py -h
-usage: detect somatic copy number from capture NGS data [-h] [-bam BAM]
-                                                        [-bed BED] [-n NAME]
-                                                        [-fa FASTA] [-m MODE]
-                                                        [-ref REF]
-                                                        [-od OUTDIR]
+usage: detect somatic copy number from capture NGS data [-h] [-bam BAM] [-bed BED] [-n NAME] [-fa FASTA] [-m MODE]
+                                                        [-ref REF] [-annot ANNOT] [-od OUTDIR]
 
 optional arguments:
-  -h, --help  show this help message and exit
-  -bam BAM    bam file
-  -bed BED    bed file
-  -n NAME     sample name
-  -fa FASTA   fasta file
-  -m MODE     analysis mode. can be [ref|cnv]
-  -ref REF    control dir
-  -od OUTDIR  out dir
-```
+  -h, --help    show this help message and exit
+  -bam BAM      bam file
+  -bed BED      bed file
+  -n NAME       sample name
+  -fa FASTA     fasta file
+  -m MODE       analysis mode. can be [ref|cnv]
+  -ref REF      control dir
+  -annot ANNOT  cnv gene annot file (clinic info,cancer type)
+  -od OUTDIR    out dir```
 
 ### *Note:*
 please change `config.ini` file when you run this pipeline
