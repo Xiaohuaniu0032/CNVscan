@@ -65,13 +65,14 @@ def main():
     f.write(cmd+'\n')
 
     if args.mode == 'ref':
+        print("your analysis mode is -m <ref>")
         pass
     else:
-        # check if -ref DIR exists
-        if args.ref:
+        # check if -ref and -annot args are provided
+        if args.ref and args.annot:
             pass
         else:
-            print("[Error]: you need to specify -ref when your -m is cnv! program will exit.")
+            print("[Error]: you need to specify -ref and -annot when your -m is cnv! program will exit.")
             exit()
 
         # make ref matrix
