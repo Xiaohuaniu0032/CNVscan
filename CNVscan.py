@@ -12,6 +12,7 @@ def parse_args():
     AP.add_argument('-fa',help='fasta file',dest='fasta',default='/data1/database/b37/human_g1k_v37.fasta')
     AP.add_argument('-m',help='analysis mode. can be [ref|cnv]',default='ref',dest='mode')
     AP.add_argument('-ref',help='control dir',dest='ref')
+    AP.add_argument('-annot',help='cnv gene annot file (clinic info,cancer type)',default='/data1/workdir/wangce/database/humandb/ctDNA_report/CNV_annotation.xlsx',dest='annot')
     AP.add_argument('-od',help='out dir',dest='outdir')
 
     return AP.parse_args()
@@ -85,8 +86,14 @@ def main():
         f.write(cmd+'\n')
 
         # calculate gene-level copy number
-        cnvfile = "%s/%s.Gene_Level_CNV.xls" % (args.outdir,args.name)
+        # out file is *.Gene_Level_CNV.tmp.xls
+        cnvfile = "%s/%s.Gene_Level_CNV.tmp.xls" % (args.outdir,args.name)
         cmd = "%s %s/bin/Gene_Level_CNV.pl -i %s -o %s" % (perl,bin_dir,logR,cnvfile)
+        f.write(cmd+'\n')
+
+        # annot if report
+        # out file is *.Gene_Level_CNV.xls
+        cmd = "perl %s/bin/annot_if_report.pl %s %s" % (bin_dir,cnvfile,args.annot)
         f.write(cmd+'\n')
 
         # cal QC (0.2X/0.5X)
@@ -94,6 +101,7 @@ def main():
         depth = "%s/%s.depth.tmp" % (args.outdir,args.name)
         cmd = "%s %s/bin/statQC.pl %s %s" % (perl,bin_dir,depth,args.outdir)
         f.write(cmd+'\n')
+
 
     f.close()
 
