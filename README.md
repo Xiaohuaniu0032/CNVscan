@@ -27,7 +27,9 @@ optional arguments:
 please change `config.ini` file when you run this pipeline
 
 
-$ cat config.ini
+$ `cat config.ini`
+
+```
 [software]
 perl = /home/fulongfei/miniconda3/bin/perl
 python3 = /home/fulongfei/miniconda3/bin/python3
