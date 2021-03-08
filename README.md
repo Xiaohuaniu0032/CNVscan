@@ -21,11 +21,12 @@ optional arguments:
   -ref REF      control dir
   -annot ANNOT  cnv gene annot file (clinic info,cancer type)
   -od OUTDIR    out dir```
+```
 
 ### *Note:*
 please change `config.ini` file when you run this pipeline
 
-```
+
 $ cat config.ini
 [software]
 perl = /home/fulongfei/miniconda3/bin/perl
